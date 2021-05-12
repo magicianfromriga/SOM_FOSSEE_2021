@@ -1,7 +1,7 @@
 # Function to create a Self Organizing Map
 library(dplyr)
 SOM <- function(x, gr) {
-  n_iter <- 1000 # Defining number of iterations
+  n_iter <- 400 # Defining number of iterations
   intl_lr <- 0.05 # Defining initial learning rate
   intl_rds <- 1 # Defining initial radius
   tm_cnst <- n_iter / log(intl_rds) # Initializing time constant
