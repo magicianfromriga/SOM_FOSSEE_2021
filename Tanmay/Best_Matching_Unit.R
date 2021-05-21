@@ -1,5 +1,5 @@
 # Function to return winning neuron
-BMU <- function(x, gr) {
+BMU <- function(x, gr) { #x is a single row of data and gr is the grid
   dst <- 0
   min_dist <- 10000000 # Setting high min dist value
   min_ind <- -1 # Setting random min_ind value
