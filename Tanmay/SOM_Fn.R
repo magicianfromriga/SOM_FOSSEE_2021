@@ -21,7 +21,7 @@ SOM <- function(x, gr) {
           new_w <- w + (new_lr * inf * (dt - w)) # Calculating new weights
           for (k in 1:3)
           {
-            gr[j, k] <- new_w[, k] # Updating new weights
+            gr[j, k] <- new_w[1,k,with=FALSE] # Updating new weights
           }
         }
     }
