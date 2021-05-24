@@ -10,7 +10,7 @@ SOM <- function(x, gr) {
     dt <- x[sample(1:nrow(x), size = 1, replace = T), ] # Selecting random input row from given data set
     new_rds <- dcy_rds(intl_rds, i, tm_cnst) # Decaying radius
     new_lr <- max(dcy_lrng_rt(intl_lr, i, n_iter), 0.01) # Decaying learning rate
-    index <- BMU(dt, gr) # Finding best matching unit for given input row
+    index <- BMU_Vectorised(dt, gr) # Finding best matching unit for given input row
     for (j in 1:nrow(gr))
     {
       w <- gr[j, ]
