@@ -65,4 +65,40 @@ SOM_Vectorized=function(x,gr)
   return(gr) #Returning the updated SOM weights.
 }
 
-
+SOM_Vectorized_Slower=function(x,gr)
+{
+  n_iter <- 400 # Defining number of iterations
+  intl_lr <- 0.05 # Defining initial learning rate
+  intl_rds <- 3 # Defining initial radius
+  tm_cnst <- n_iter / log(intl_rds) # Initializing time constant
+  ltrl_dst_points=expand.grid(1:sqrt(nrow(gr)),1:sqrt(nrow(gr)))#Initialising physical locations of neurons to figure out lateral distance.
+  rows=sqrt(nrow(gr))
+  dcyng_rds <- dcy_rds_v(intl_rds, n_iter, tm_cnst) # Decaying radius
+  dcyng_lr <- dcy_lrng_rt_v(intl_lr, n_iter)# Decaying learning rate
+  n_epochs=10
+  for(ne in 1:n_epochs)
+  {
+    print(ne)
+    old_grid=gr
+    for (i in 1:n_iter) # Looping through for training
+    {
+      cur_rds=as.vector(unlist(dcyng_rds[i]))
+      cur_lr=as.vector(unlist(dcyng_lr[i]))
+      dt <- as.vector(unlist(x[sample(1:nrow(x), size = 1, replace = F), ])) # Selecting random input row from given data set
+      index_temp <- BMU_Vectorised(dt, gr) # Finding best matching unit for given input row
+      index_new=c((as.integer(index_temp/rows))+1,(index_temp%%rows)+1) #Converting a 1D co-ordinate to a 2D co-ordinate for finding lateral distance on the map.
+      ltrl_dist=sqrt(rowSums(sweep(ltrl_dst_points,2,index_new)^2)) #Finding Euclidean distance between the given best matching units and all units on the map.
+      rn=which(ltrl_dist<=cur_rds) #Finding neurons that are within the radius of the winning unit.
+      inf=inflnc(ltrl_dist[rn],cur_rds) #Calculating the influence of the winning neuron on neighbours.
+      diff_grid=(sweep(gr[rn,],2,dt))*-1 #A temporary matrix that stores the difference between the data point and the weights of the winning neuron & neighbours.
+      updt_weights=cur_lr*inf*diff_grid #The updating operation on the winning and neighbouring neurons.
+      gr[rn,]=as.data.table(as.matrix(gr[rn,])+as.matrix(updt_weights)) #Now updating those grid entries that are either the winning neuron or its neighbours.
+      if(isTRUE(all.equal(old_grid,gr)))
+      {
+        print(i)
+        print("Converged")
+      }
+    }
+  }
+  return(gr) #Returning the updated SOM weights.
+}
