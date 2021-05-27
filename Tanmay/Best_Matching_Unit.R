@@ -1,37 +1,38 @@
-library(profvis)
-# Function to return winning neuron
-BMU <- function(x, gr) { #x is a single row of data and gr is the grid
-  dst <- 0
-  min_dist <- 10000000 # Setting high min dist value
-  min_ind <- -1 # Setting random min_ind value
+#R Script to find the winning neuron / Best Matching unit of a SOM grid
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Slow Implementation - Function to return the winning neuron.
+#x is a single row of data and gr is the grid
+
+BMU <- function(x, gr) { 
+  dst <- 0 #Variable to store the distance measure between the given row of data and a neuron in the grid.
+  min_dist <- 10000000 #Variable to store the minimum distance. 
+  min_ind <- -1 # Variable to store the location of the most similar neuron.
   for (e in 1:nrow(gr)) # Iterating through grid
   {
-    dst <- ssd(x, gr[e, ]) # SSD distance
+    dst <- ssd(x, gr[e, ]) # Calcluating distance between weights of the current neuron and the data row.
+    #Now performing comparision to check if this distance is less than the current minimum. 
+    #If this is true then the min_dist and min_ind are updated.
     if (dst < min_dist) {
       min_dist <- dst # Updating min distance for winning unit
       min_ind <- e # Updating winning neuron
     }
   }
-  return(min_ind)
+  #Returning the winning neuron which is zero indexed.
+  return(min_ind-1)
 }
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Fastest BMU Implementation using vectorisation.
 #x is a single row of data and gr is the grid
+
 BMU_Vectorised <- function(x, gr) { 
-temp=as.vector(unlist(x))
-dist_mtrx=rowSums(sweep(grid,2,temp)^2)
-min_ind=which.min(dist_mtrx)
-return (min_ind)
+temp=as.vector(unlist(x)) #Input is a row of a data table. Converting it to a vector.
+dist_mtrx=rowSums(sweep(grid,2,temp)^2) #Calculating the distance of this row from all the neurons using matrix operations.
+min_ind=which.min(dist_mtrx) #Finding the location of the neuron with the minimum distance.
+return (min_ind-1) #Returning the zero-indexed value of the winning neuron.
 }
 
-profvis(
-for(i in 1:400)
-{
-  BMU(data[i,],grid)
-}
-)
-profvis(
-  for(i in 1:400)
-  {
-    BMU_Vectorised(data[i,],grid)
-  }
-)
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
