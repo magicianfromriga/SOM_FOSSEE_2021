@@ -20,19 +20,19 @@ ssd <- function(x, y) {
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # 3) Function to create a SOM grid.
-# n is the number of neurons.
-# p is the number of columns in the original dataframe.
+# x is number of rows, y is number of columns.
+# p is the number of features in the original dataframe.
 # data table is used for faster computation.
 
-crt_gr <- function(n,p) {
-  ret <- matrix(data = rnorm(n * p), nrow = n, ncol = p)
+crt_gr <- function(x,y,p) {
+  ret <- matrix(data = rnorm(x*y* p), nrow = x*y, ncol = p)
   return(ret)
 }
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#Creating a 4*4 grid using the function defined above.
+#Creating a 5*5 grid using the function defined above.
 set.seed(222)
-grid <- crt_gr(16,3)
+grid <- crt_gr(5,5,3)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
