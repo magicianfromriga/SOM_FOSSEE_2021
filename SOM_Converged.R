@@ -139,7 +139,7 @@ SOM <- function(x, input_grid) {
   l <- c()
   for(ne in 1:n_epochs)
   {
-    extra <- ((ne-1)*400)
+    extra <- ((ne-1)*nrow(data))
     for (i in 1:n_iteration) # Looping through for training
     {
       old_grid=input_grid
