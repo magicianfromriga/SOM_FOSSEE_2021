@@ -6,7 +6,7 @@ library(ggplot2)
 
 # 1) Reading the data and scaling it
 
-data(iris)
+data <- read.csv("binary.csv", header = T)
 X <- scale(data[, -1])
 data <- X
 
