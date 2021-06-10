@@ -128,25 +128,25 @@ library(dplyr)
 
 SOM <- function(x, input_grid) {
   breaker <- 0
-  n_iteration <- 400 # Defining number of iterations
+  n_iteration <- nrow(x) # Defining number of iterations
   initial_learning_rate <- 0.05 # Defining initial learning rate
   initial_radius <- 3 # Defining initial radius
   time_constant <- n_iteration / log(initial_radius) # Initializing time constant
   lateral_distance_points=expand.grid(1:sqrt(nrow(input_grid)),1:sqrt(nrow(input_grid)))#Initialising physical locations of neurons to figure out lateral distance.
   rows=sqrt(nrow(input_grid)) #The square grid is used here - so taking the number of rows as square root of number of entries in the grid.
-  n_epochs=10 #Defining the number of epochs.
+  n_epochs=40 #Defining the number of epochs.
   new_radius <- initial_radius
   l <- c()
   for(ne in 1:n_epochs)
   {
-    extra <- ((ne-1)*nrow(data))
+    extra <- ((ne-1)*400)
     for (i in 1:n_iteration) # Looping through for training
     {
       old_grid=input_grid
       curr_i <- extra + i
       sample_input_row <- as.vector(unlist(x[sample(1:nrow(x), size = 1, replace = F), ])) # Selecting random input row from given data set
       new_radius <- decay_radius_function(initial_radius, curr_i, time_constant) # Decaying radius
-      new_learning_rate <- max(decay_learning_rate(initial_learning_rate,curr_i, n_iteration), 0.01) # Decaying learning rate
+      new_learning_rate <- decay_learning_rate(initial_learning_rate,curr_i, n_iteration) # Decaying learning rate
       index_temp <- BMU_Vectorised(sample_input_row, input_grid) # Finding best matching unit for given input row
       index_new=c((as.integer(index_temp/rows)+1),(index_temp%%rows)+1) #Converting a 1D co-ordinate to a 2D co-ordinate for finding lateral distance on the map.
       lateral_distance=sqrt(abs(rowSums(sweep(lateral_distance_points,2,index_new)^2))) #Finding Euclidean distance between the given best matching units and all units on the map.
@@ -155,15 +155,15 @@ SOM <- function(x, input_grid) {
       if(length(rn)!=1) #Updating multiple rows if neighbourhood is large
       {
         #Calculating the influence of the winning neuron on neighbours.
-        diff_grid=(sweep(grid[rn,],2,sample_input_row))*-1 #A temporary matrix that stores the difference between the data point and the weights of the winning neuron & neighbours.
+        diff_grid=(sweep(input_grid[rn,],2,sample_input_row))*-1 #A temporary matrix that stores the difference between the data point and the weights of the winning neuron & neighbours.
         updated_weights=new_learning_rate*inf*diff_grid #The updating operation on the winning and neighbouring neurons.
         input_grid[rn,]=input_grid[rn,]+updated_weights #Now updating those grid entries that are either the winning neuron or its neighbours.
       }
       else #Updating only winning neuron.
       {
-        diff_row=(grid[rn,]-sample_input_row)*-1 #A temporary matrix that stores the difference between the data point and the weights of the winning neuron & neighbours.
+        diff_row=(input_grid[rn,]-sample_input_row)*-1 #A temporary matrix that stores the difference between the data point and the weights of the winning neuron & neighbours.
         updated_weights=new_learning_rate*inf*diff_row #The updating operation on the winning and neighbouring neurons.
-        grid[rn,]=grid[rn,]+updated_weights #Now updating those grid entries that are either the winning neuron or its neighbours.
+        input_grid[rn,]=input_grid[rn,]+updated_weights #Now updating those grid entries that are either the winning neuron or its neighbours.
       }
       l <- c(l,euclidean_distance(old_grid,input_grid))
       if(isTRUE(all.equal(old_grid,input_grid)))
@@ -189,7 +189,8 @@ l <- y[2]
 
 t=1:length(l[[1]])
 plot(t,l[[1]])
-
+l=unlist(l)
+l[which.min(unlist(l))]
 #rm(list=ls())
 
 drawGrid<- function(weight,dimension){
