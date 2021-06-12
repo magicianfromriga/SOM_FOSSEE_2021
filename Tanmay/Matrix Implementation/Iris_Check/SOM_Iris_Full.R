@@ -187,9 +187,6 @@ l <- y[2]
 
 t=1:length(l[[1]])
 plot(t,l[[1]])
-l=unlist(l)
-l[which.min(unlist(l))]
-#rm(list=ls())
 
 drawGrid<- function(weight,dimension){
   
